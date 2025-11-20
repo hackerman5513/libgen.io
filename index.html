@@ -178,7 +178,7 @@ async function parse_one(text) {
     let extension = doc.querySelector(sel_ext).innerText;
     let size = doc.querySelector(sel_size).innerText;
     let link = doc.querySelector(sel_link).href;
-    link = link.replace('file://', 'https://libgen.li');
+    link = link.replace('hackerman5513.github.io', 'https://libgen.li');
     parse_two(link, extension, size);
     await sleep(500);
   }
@@ -203,7 +203,7 @@ parse_three = (text, ext, size) => {
   let sel_img = "#main > tbody > tr:nth-child(2) > td:nth-child(2) > table > tbody > tr:nth-child(2) > td:nth-child(1) > a > img";
   let get_link = doc.querySelector(sel_link).href;
   get_link = "https://libgen.li/get.php" + get_link.split("get.php")[1];
-  let get_img = doc.querySelector(sel_img).src.replace('file://', 'https://libgen.li/');
+  let get_img = doc.querySelector(sel_img).src.replace('hackerman5513.github.io', 'https://libgen.li/');
   add_book(get_img, get_link, ext, size);
 };
 
