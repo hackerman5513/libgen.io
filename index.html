@@ -147,10 +147,7 @@ url_fix = (url) => url.replace(/^.*?(\/cover)/, 'libgen.li/index.php?req=$1');
 
 // Fetch books from the input
 parse_zero = (text) => {
-  let imgs = document.querySelectorAll('img');
-  let links = document.querySelectorAll('a');
-  for (let img of imgs) img.remove();
-  for (let a of links) a.remove();
+
 
   let xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function () {
