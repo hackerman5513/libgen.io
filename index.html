@@ -143,7 +143,7 @@ a:hover {
 parser = new DOMParser();
 
 // Function to replace URL for `libgen.li`
-url_fix = (url) => url.replace(/^.*?(\/cover)/, 'https://libgen.li/index.php?req=$1');
+url_fix = (url) => url.replace(/^.*?(\/cover)/, 'libgen.li/index.php?req=$1');
 
 // Fetch books from the input
 parse_zero = (text) => {
@@ -203,7 +203,7 @@ parse_three = (text, ext, size) => {
   let sel_img = "#main > tbody > tr:nth-child(2) > td:nth-child(2) > table > tbody > tr:nth-child(2) > td:nth-child(1) > a > img";
   let get_link = doc.querySelector(sel_link).href;
   get_link = "https://libgen.li/get.php" + get_link.split("get.php")[1];
-  let get_img = doc.querySelector(sel_img).src.replace('hackerman5513.github.io', 'https://libgen.li/');
+  let get_img = doc.querySelector(sel_img).src.replace('hackerman5513.github.io', 'libgen.li/');
   add_book(get_img, get_link, ext, size);
 };
 
