@@ -148,6 +148,7 @@ url_fix = (url) => url.replace(/^.*?(\/cover)/, 'libgen.li/index.php?req=$1');
 // Fetch books from the input
 parse_zero = (text) => {
 
+  document.querySelector('.book-grid').innerHTML = "";
 
   let xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function () {
