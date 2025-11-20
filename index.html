@@ -1,1 +1,242 @@
-<h1>Hello</h1>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<input type="text">
+<button>GO</button>
+
+<style>
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Orbitron', monospace;
+  background: #000;
+  color: #0aff0a;
+  min-height: 100vh;
+  letter-spacing: 1px;
+}
+
+/* Subtle matrix-style falling code animation */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background-image: linear-gradient(
+      rgba(0, 255, 0, 0.15) 1px, 
+      transparent 1px
+  );
+  background-size: 3px 3px;
+  animation: matrixScroll 20s linear infinite;
+  opacity: 0.15;
+}
+
+@keyframes matrixScroll {
+  from { background-position-y: 0; }
+  to { background-position-y: 1000px; }
+}
+
+button, input {
+  font-size: 30px;
+  margin: auto;
+  display: block;
+  margin-top: 20px;
+  background: rgba(0, 0, 0, 0.9);
+  border: 2px solid #0aff0a;
+  color: #0aff0a;
+  padding: 10px 20px;
+  border-radius: 8px;
+  outline: none;
+  text-shadow: 0 0 6px #0aff0a;
+  box-shadow: 0 0 15px #0aff0a33, inset 0 0 10px #0aff0a22;
+  transition: 0.25s ease-out;
+}
+
+button:hover, input:focus {
+  box-shadow: 0 0 25px #0aff0a88, inset 0 0 15px #0aff0a44;
+  transform: scale(1.05);
+}
+
+button:active {
+  transform: scale(0.97);
+  box-shadow: 0 0 25px #00ff00ff, inset 0 0 10px #00ff0055;
+}
+
+/* Book Grid */
+.book-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 25px;
+  padding: 40px;
+  margin-top: 30px;
+}
+
+/* Book container with glow effect */
+.book {
+  text-align: center;
+  padding: 15px;
+  background: rgba(0, 20, 0, 0.7);
+  border: 1px solid #0aff0a55;
+  border-radius: 10px;
+  backdrop-filter: blur(2px);
+  box-shadow: 0 0 15px #0aff0a22;
+  transition: 0.3s;
+}
+
+.book:hover {
+  box-shadow: 0 0 25px #0aff0a88;
+  transform: translateY(-6px);
+}
+
+/* Book cover images */
+img {
+  width: 100%;
+  max-width: 200px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  border-radius: 5px;
+  box-shadow: 0 0 15px #0aff0a33;
+}
+
+/* Download links */
+a {
+  display: block;
+  font-size: 18px;
+  margin-top: 12px;
+  color: #0aff0a;
+  text-decoration: none;
+  text-shadow: 0 0 6px #0aff0a;
+  transition: 0.2s;
+}
+
+a:hover {
+  text-shadow: 0 0 12px #0aff0a;
+  color: #afffaf;
+}
+
+/* Responsive grid */
+@media (max-width: 1200px) {
+  .book-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+@media (max-width: 900px) {
+  .book-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 600px) {
+  .book-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 400px) {
+  .book-grid { grid-template-columns: 1fr; }
+}
+
+</style>
+
+<script>
+// DOM parser to parse HTML content
+parser = new DOMParser();
+
+// Function to replace URL for `libgen.li`
+url_fix = (url) => url.replace(/^.*?(\/cover)/, 'https://libgen.li/index.php?req=$1');
+
+// Fetch books from the input
+parse_zero = (text) => {
+  let imgs = document.querySelectorAll('img');
+  let links = document.querySelectorAll('a');
+  for (let img of imgs) img.remove();
+  for (let a of links) a.remove();
+
+  let xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function () {
+    if (this.readyState == 4 && this.status == 200)
+      parse_one(xhttp.responseText);
+  };
+  let url = `https://corsproxy.io/?url=https://libgen.li/index.php?req=${text}`;
+  xhttp.open("GET", url, true);
+  xhttp.send();
+};
+
+// Pause function for async processing
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// Parse book details
+async function parse_one(text) {
+  let doc = parser.parseFromString(text, "text/html");
+  let len = doc.querySelectorAll('html body #tablelibgen tbody tr').length;
+  for (line = 1; line <= len; line++) {
+    let sel_link = `#tablelibgen > tbody > tr:nth-child(${line}) > td:nth-child(9) a`;
+    let sel_size = `#tablelibgen > tbody > tr:nth-child(${line}) > td:nth-child(7)`;
+    let sel_ext = `#tablelibgen > tbody > tr:nth-child(${line}) > td:nth-child(8)`;
+    let extension = doc.querySelector(sel_ext).innerText;
+    let size = doc.querySelector(sel_size).innerText;
+    let link = doc.querySelector(sel_link).href;
+    link = link.replace('file://', 'https://libgen.li');
+    parse_two(link, extension, size);
+    await sleep(500);
+  }
+}
+
+// Parse download links for books
+parse_two = (text, ext, size) => {
+  let xhttp2 = new XMLHttpRequest();
+  xhttp2.onreadystatechange = function () {
+    if (this.readyState == 4 && this.status == 200)
+      parse_three(xhttp2.responseText, ext, size);
+  };
+  let link = `https://corsproxy.io/?url=${text}`;
+  xhttp2.open("GET", link, true);
+  xhttp2.send();
+};
+
+// Parse final book details
+parse_three = (text, ext, size) => {
+  let doc = parser.parseFromString(text, "text/html");
+  let sel_link = "#main a";
+  let sel_img = "#main > tbody > tr:nth-child(2) > td:nth-child(2) > table > tbody > tr:nth-child(2) > td:nth-child(1) > a > img";
+  let get_link = doc.querySelector(sel_link).href;
+  get_link = "https://libgen.li/get.php" + get_link.split("get.php")[1];
+  let get_img = doc.querySelector(sel_img).src.replace('file://', 'https://libgen.li/');
+  add_book(get_img, get_link, ext, size);
+};
+
+// Add book to the page
+add_book = (img_url, link, ext, size) => {
+  let bookDiv = document.createElement('div');
+  bookDiv.classList.add('book');
+
+  let img = document.createElement('img');
+  img.src = img_url;
+
+  let a = document.createElement('a');
+  a.href = link;
+  a.innerText = ext + ' ' + size;
+
+  bookDiv.appendChild(img);
+  bookDiv.appendChild(a);
+
+  document.querySelector('.book-grid').appendChild(bookDiv);
+};
+
+// Go function to start the process
+go = () => parse_zero(document.querySelector('input').value.replace(/\s+/g, '+'));
+
+// Event listeners
+document.querySelector('button').onclick = () => go();
+document.body.onkeyup = (e) => e.key == 'Enter' && go();
+
+</script>
+
+<!-- Grid container for books -->
+<div class="book-grid"></div>
+
+</body>
+
+
