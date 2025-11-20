@@ -178,7 +178,7 @@ async function parse_one(text) {
     let extension = doc.querySelector(sel_ext).innerText;
     let size = doc.querySelector(sel_size).innerText;
     let link = doc.querySelector(sel_link).href;
-    link = link.replace('hackerman5513.github.io', 'https://libgen.li');
+    link = link.replace('hackerman5513.github.io', 'libgen.li');
     parse_two(link, extension, size);
     await sleep(500);
   }
